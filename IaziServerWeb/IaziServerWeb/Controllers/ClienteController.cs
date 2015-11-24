@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Web.Http;
 using IaziServerWeb.Models;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 namespace IaziServerWeb.Controllers
 {
