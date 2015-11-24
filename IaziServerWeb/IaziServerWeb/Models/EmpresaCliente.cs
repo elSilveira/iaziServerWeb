@@ -14,10 +14,8 @@ namespace IaziServerWeb.Models
         [Key]
         public int idEmpresaCliente { get; set; }
 
-        public int idEmpresa { get; set; }
         public virtual Empresa empresa { get; set; }
-
-        public int idCliente { get; set; }
+        
         public virtual Cliente cliente { get; set; }
 
         public int tipoCliente { get; set; } // 0-Cliente 1-funcionario 2-gerente 3-administrador

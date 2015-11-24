@@ -27,7 +27,7 @@ namespace IaziServerWeb.Controllers
                 DBContext db = new DBContext();
 
                 var query = from a in db.Agenda
-                            where a.idEmpresaCliente == idFuncionario
+                            where a.empresaCliente.idEmpresaCliente == idFuncionario
                             && a.horarioAgenda.Year == ano
                             && a.horarioAgenda.Month == mes + 1
                             && a.horarioAgenda.Day == dia

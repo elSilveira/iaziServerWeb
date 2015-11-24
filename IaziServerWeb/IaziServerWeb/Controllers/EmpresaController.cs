@@ -55,10 +55,10 @@ namespace IaziServerWeb.Controllers
                 foreach (string id in lista)
                 {
                     var idEmpresa = Convert.ToInt32(id);
-                    var query = from ecs in db.EmpresaClienteServico
-                                join ec in db.EmpresaCliente on ecs.idEmpresaCliente equals ec.idEmpresaCliente
-                                join c in db.Cliente on ec.idCliente equals c.idCliente
-                                where ecs.idEmpresaServico == idEmpresa
+                    var query = from ecs in db.EmpresaCliServ
+                                join ec in db.EmpresaCliente on ecs.empresaCliente.idEmpresaCliente equals ec.idEmpresaCliente
+                                join c in db.Cliente on ec.cliente.idCliente equals c.idCliente
+                                where ecs.empresaServico.idEmpresaServico == idEmpresa
                                 select new
                                 {
                                     nomeCliente = c.nomeCliente,
@@ -66,7 +66,7 @@ namespace IaziServerWeb.Controllers
                                     especializacaoCliente = ec.especializacaoCliente,
                                     especializacao2Cliente = ec.especializacao2Cliente,
                                     especializacao3Cliente = ec.especializacao3Cliente,
-                                    idEmpresaCliente = ecs.idEmpresaClienteServico
+                                    idEmpresaCliente = ecs.idEmpresaCliServ
 
                                 };
                     IEnumerable<Profissional> cart = from ca in query.AsEnumerable()
@@ -109,9 +109,9 @@ namespace IaziServerWeb.Controllers
                 id = json.idEmpresaServico;
                 DBContext db = new DBContext();
                 var query = from es in db.EmpresaServico
-                            join s in db.Servico on es.idServico equals s.idServico
-                            orderby s.idCategoria, s.nomeServico
-                            where es.idEmpresa == id
+                            join s in db.Servico on es.servico.idServico equals s.idServico
+                            orderby s.categoria.idCategoria, s.nomeServico
+                            where es.empresa.idEmpresa == id
                             select es;
 
                 foreach (EmpresaServico es in query)
@@ -158,8 +158,8 @@ namespace IaziServerWeb.Controllers
                     {
                         db.SaveChanges();
                         var query2 = (from s in db.Servico
-                                      join es in db.EmpresaServico on e.idEmpresa equals es.idEmpresa
-                                      where s.idServico == es.idServico
+                                      join es in db.EmpresaServico on e.idEmpresa equals es.empresa.idEmpresa
+                                      where s.idServico == es.servico.idServico
                                       select s.tipoServico).Distinct();
                         string tipoServico = "";
                         foreach (string tipo in query2)

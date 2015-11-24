@@ -3,6 +3,7 @@ using MySql.Data.Entity;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,11 +23,25 @@ namespace IaziServerWeb.Models
         public virtual DbSet<EmpresaServico> EmpresaServico { get; set; }
         public virtual DbSet<EmpresaCliente> EmpresaCliente { get; set; }
         public virtual DbSet<ClienteServico> ClienteServico { get; set; }
-        public virtual DbSet<EmpresaClienteServico> EmpresaClienteServico { get; set; }
+        public virtual DbSet<EmpresaCliServ> EmpresaCliServ { get; set; }
 
         public DBContext()
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DBContext, Configuration>());
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+            modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
+            modelBuilder.Properties()
+                   .Where(p => p.Name == p.ReflectedType.Name + "Id")
+                   .Configure(p => p.IsKey());
+            modelBuilder.Properties<string>()
+                   .Configure(p => p.HasColumnType("nvarchar"));
+            modelBuilder.Properties<string>()
+                  .Configure(p => p.HasMaxLength(150));
         }
     }
 }

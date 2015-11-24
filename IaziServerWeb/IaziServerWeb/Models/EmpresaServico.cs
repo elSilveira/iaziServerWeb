@@ -13,10 +13,8 @@ namespace IaziServerWeb.Models
         [Key]
         public int idEmpresaServico { get; set; }
 
-        public int idEmpresa { get; set; }
         public virtual Empresa empresa { get; set; }
-
-        public int idServico { get; set; }
+        
         public virtual Servico servico { get; set; }
 
         public int tempoServico { get; set; }

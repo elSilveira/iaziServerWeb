@@ -23,7 +23,6 @@ namespace IaziServerWeb.Controllers
         // GET: api/values
         [Route("api/values")]
         [HttpGet]
-        [Authorize]
         public IEnumerable<string> Get()
         {
             
@@ -50,7 +49,7 @@ namespace IaziServerWeb.Controllers
                 db.SaveChanges();
 
                 usuario.cliente = cliente;
-                usuario.idCliente = cliente.idCliente;
+                usuario.cliente.idCliente = cliente.idCliente;
                 usuario.roleUsuario = "user";
                 usuario.senhaUsuario = json.Password.ToString();
                 db.Usuario.Add(usuario);

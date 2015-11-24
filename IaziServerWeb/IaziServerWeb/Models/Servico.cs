@@ -14,9 +14,7 @@ namespace IaziServerWeb.Models
         public int idServico { get; set; }
         
         public string nomeServico { get; set; }
-
-
-        public int idCategoria { get; set; }
+        
         public virtual Categoria categoria { get; set; }
 
         public string tipoServico { get; set; }

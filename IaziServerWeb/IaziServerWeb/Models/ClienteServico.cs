@@ -12,13 +12,11 @@ namespace IaziServerWeb.Models
     public class ClienteServico
     {
         [Key]
-        public int idClienteServico { get; set; }
+        public int idCliServ { get; set; }
 
-        public int idCliente { get; set; }
         public virtual Cliente cliente { get; set; }
 
-        public int idEmpresaClienteServico { get; set; }
-        public virtual EmpresaClienteServico empresaClienteServico{get; set;}
+        public virtual EmpresaCliServ empresaCliServ{get; set;}
 
         // 0 - Cliente enviou
         // 1 - Sucesso

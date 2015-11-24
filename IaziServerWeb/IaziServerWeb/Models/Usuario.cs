@@ -13,8 +13,7 @@ namespace IaziServerWeb.Models
     {
         [Key]
         public int idUsuario { get; set; }
-
-        public int idCliente { get; set; }
+        
         public virtual Cliente cliente { get; set; }
 
         [MaxLength(200)]

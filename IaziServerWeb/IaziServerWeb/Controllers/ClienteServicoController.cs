@@ -19,25 +19,25 @@ namespace IaziServerWeb.Controllers
             try
             {
                 dynamic json = model["Horario"];
-                var idUsuario = 0;
-                var idCliente = 0;
+                int idUsuario = 0;
+                Cliente cliente = new Cliente() ;
                 string dataServico = json.dataServico;
                 idUsuario = json.idUsuario;
 
                 DBContext db = new DBContext();
                 var query = from user in db.Usuario
                             where user.idUsuario == idUsuario
-                            select user.idCliente;
-                foreach (var x in query)
+                            select user;
+                foreach(Usuario x in query)
                 {
-                    idCliente = x;
+                    cliente = x.cliente;
                 }
                 ClienteServico cs = new ClienteServico()
                 {
                     dataServico = Convert.ToDateTime(json.dataServico),
-                    idEmpresaClienteServico = json.idEmpresaCliente,
+                    empresaCliServ = json.empresaServico,
                     valorServico = json.valorServico,
-                    idCliente = idCliente
+                    cliente = cliente
                 };
                 db.Database.CreateIfNotExists();
                 db.ClienteServico.Add(cs);
