@@ -15,8 +15,8 @@ namespace IaziServerWeb
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "iaziApi",
-                routeTemplate: "iaziapp/{controller}/{id}",
+                name: "DefaultApi",
+                routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
 
             );
