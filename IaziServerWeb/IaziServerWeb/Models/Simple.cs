@@ -46,6 +46,7 @@ namespace IaziServerWeb.Models
                 
                 using (DBContext db = new DBContext())
                 {
+                    var check = Encrypt(password);
                     var pass = Decrypt(password);
                     var query = from u in db.Usuario
                                 where u.idUsuario == user && u.senhaUsuario == pass

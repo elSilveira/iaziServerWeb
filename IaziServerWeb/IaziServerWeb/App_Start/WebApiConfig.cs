@@ -15,10 +15,13 @@ namespace IaziServerWeb
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
+                name: "iaziApi",
+                routeTemplate: "iaziapp/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
+
             );
+
+            //config.Filters.Add(new AuthorizeAttribute());
         }
     }
 }
