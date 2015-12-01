@@ -40,8 +40,6 @@ namespace IaziServerWeb.Controllers
                 var usuario = new Usuario();
                 DBContext db = new DBContext();
 
-                db.Database.CreateIfNotExists();
-
                 dynamic json = model;
                 cliente = json.Cliente.ToObject<Cliente>();
                 db.Cliente.Add(cliente);
@@ -78,6 +76,34 @@ namespace IaziServerWeb.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
 
+            }
+        }
+
+        [Route("login")]
+        public HttpResponseMessage Login([FromBody]JObject model)
+        {
+            try
+            {
+                dynamic json = model;
+                var usuario = "";
+                var senha = "";
+                usuario = json.emailCliente;
+                senha = json.senhaUsuario;
+                DBContext db = new DBContext();
+                var query = from u in db.Usuario where u.cliente.emailCliente == usuario
+                            && u.senhaUsuario == senha
+                            select u;
+                Usuario usu = new Usuario();
+                foreach(Usuario u in query)
+                {
+                    usu = u;
+                    usu.senhaUsuario = Simple.Encrypt(u.senhaUsuario);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, new { usu });
+            }
+            catch(Exception er)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, er.Message);
             }
         }
 
