@@ -84,7 +84,7 @@ namespace IaziServerWeb.Controllers
                         var exist = false;
                         foreach (Profissional p in listProfissional)
                             if (x.nomeCliente == p.nomeCliente) exist = true;
-                        if(!exist) listProfissional.Add(x);
+                        if (!exist) listProfissional.Add(x);
                     }
                 }
                 return Request.CreateResponse(HttpStatusCode.OK, listProfissional);
@@ -129,6 +129,49 @@ namespace IaziServerWeb.Controllers
 
         }
 
+        [Route("empresas/listTodosServicos")]
+        [HttpPost]
+        [Authorize]
+        public HttpResponseMessage ListarTodosServicos([FromBody]JObject model)
+        {
+            try
+            {
+                List<EmpresaServico> servicosEmpresa = new List<EmpresaServico>();
+                List<Servico> servicos = new List<Servico>();
+                dynamic json = model;
+                int id = 0;
+                id = json.idEmpresaServico;
+                DBContext db = new DBContext();
+                var query = from es in db.EmpresaServico
+                            join s in db.Servico on es.servico.idServico equals s.idServico
+                            orderby s.categoria.idCategoria, s.nomeServico
+                            where es.empresa.idEmpresa == id
+                            select es;
+
+                foreach (EmpresaServico es in query)
+                {
+                    servicosEmpresa.Add(es);
+                }
+
+                var query2 = (from es in db.Servico
+                            select es).OrderBy(x => x.nomeServico);
+
+                foreach (Servico es in query2)
+                {
+                    servicos.Add(es);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, new {
+                    servicosEmpresa, servicos});
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
         [Route("empresas/listEmpresas")]
         [HttpPost]
         [Authorize]
@@ -138,40 +181,71 @@ namespace IaziServerWeb.Controllers
             {
                 List<Empresa> empresas = new List<Empresa>();
                 dynamic json = model;
-                using (DBContext db = new DBContext())
+                DBContext db = new DBContext();
+
+
+                var query = db.Empresa.SqlQuery("select e.* from Empresas e " +
+                    " where e.idEmpresa in ( " +
+                    "     select es.idEmpresa from EmpresaServico es where " +
+                    "     es.idServico in (select s.idServico from Servicos s where idCategoria = " + json.idCategoria + ")) " +
+                    "     and e.cidadeEmpresa = (Select cli.cidadeCliente from Clientes cli " +
+                    "         where cli.idCliente = (select u.idCliente from Usuarios u where idUsuario = " + json.idUsuario + ")) " +
+                    "     and e.estadoEmpresa = (Select cli.estadoCliente from Clientes cli " +
+                    "         where cli.idCliente = (select u.idCliente from Usuarios u where idUsuario = " + json.idUsuario + ")) " +
+                    "     order by e.bairroEmpresa ");
+                foreach (Empresa e in query)
                 {
-
-                    var query = db.Empresa.SqlQuery("select e.* from Empresas e " +
-                        " where e.idEmpresa in ( " +
-                        "     select es.idEmpresa from EmpresaServico es where " +
-                        "     es.idServico in (select s.idServico from Servicos s where idCategoria = " + json.idCategoria + ")) " +
-                        "     and e.cidadeEmpresa = (Select cli.cidadeCliente from Clientes cli " +
-                        "         where cli.idCliente = (select u.idCliente from Usuarios u where idUsuario = " + json.idUsuario + ")) " +
-                        "     and e.estadoEmpresa = (Select cli.estadoCliente from Clientes cli " +
-                        "         where cli.idCliente = (select u.idCliente from Usuarios u where idUsuario = " + json.idUsuario + ")) " +
-                        "     order by e.bairroEmpresa ");
-                    foreach (Empresa e in query)
+                    empresas.Add(e);
+                }
+                foreach (Empresa e in empresas)
+                {
+                    db.SaveChanges();
+                    var query2 = (from s in db.Servico
+                                  join es in db.EmpresaServico on e.idEmpresa equals es.empresa.idEmpresa
+                                  where s.idServico == es.servico.idServico
+                                  select s.tipoServico).Distinct();
+                    string tipoServico = "";
+                    foreach (string tipo in query2)
                     {
-                        empresas.Add(e);
+                        tipoServico += tipo + " ";
                     }
-                    foreach (Empresa e in empresas)
-                    {
-                        db.SaveChanges();
-                        var query2 = (from s in db.Servico
-                                      join es in db.EmpresaServico on e.idEmpresa equals es.empresa.idEmpresa
-                                      where s.idServico == es.servico.idServico
-                                      select s.tipoServico).Distinct();
-                        string tipoServico = "";
-                        foreach (string tipo in query2)
-                        {
-                            tipoServico += tipo + " ";
-                        }
-                        e.tipoServico = tipoServico;
-
-                    }
-
+                    e.tipoServico = tipoServico;
 
                 }
+
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, empresas);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+        }
+
+        [Route("empresas/listEmpresa")]
+        [HttpPost]
+        [Authorize]
+        public HttpResponseMessage ListarEmpresa([FromBody]JObject model)
+        {
+            try
+            {
+                List<Empresa> empresas = new List<Empresa>();
+                dynamic json = model["Cliente"];
+                int idCliente = json;
+                DBContext db = new DBContext();
+
+
+                var query = from e in db.Empresa
+                            join ec in db.EmpresaCliente on e.idEmpresa equals ec.empresa.idEmpresa
+                            where ec.cliente.idCliente == idCliente
+                            select e;
+
+                foreach (Empresa e in query)
+                {
+                    empresas.Add(e);
+                }
+
                 return Request.CreateResponse(HttpStatusCode.OK, empresas);
             }
             catch (Exception ex)
@@ -183,18 +257,41 @@ namespace IaziServerWeb.Controllers
         [Route("api/addempresa")]
         [HttpPost]
         [Authorize]
-        public HttpResponseMessage CadastroEmpresa(Empresa c)
+        public HttpResponseMessage CadastroEmpresa([FromBody]JObject model)
         {
             try
             {
-                using (DBContext db = new DBContext())
-                {
+                var empresa = new Empresa();
+                DBContext db = new DBContext();
 
-                    db.Database.CreateIfNotExists();
-                    db.Empresa.Add(c);
-                    db.SaveChanges();
-                }
-                return Request.CreateResponse(HttpStatusCode.OK, "Cadastro da empresa " + c.nomeEmpresa + " realizado.");
+                dynamic json = model["Empresa"];
+                empresa = json.ToObject<Empresa>();
+                db.Empresa.Add(empresa);
+                db.SaveChanges();
+
+                json = model["Cliente"];
+                int idCliente = json;
+                var user = (from u in db.Usuario
+                            where u.cliente.idCliente == idCliente
+                            select u).First();
+                user.roleUsuario = "manager";
+                db.SaveChanges();
+
+                EmpresaCliente ec = new EmpresaCliente()
+                {
+                    cliente = (from c in db.Cliente
+                               where c.idCliente == idCliente
+                               select c).First(),
+                    tipoCliente = 2,
+                    empresa = empresa,
+                    especializacaoCliente = ""
+                };
+                db.EmpresaCliente.Add(ec);
+                db.SaveChanges();
+                //                idEmpresaCliente idEmpresa   idCliente tipoCliente especializacaoCliente especializacao2Cliente  especializacao3Cliente
+                //22  1   78  3   Massagista de Mulheres NULL    NULL
+
+                return Request.CreateResponse(HttpStatusCode.OK, "Cadastro da empresa " + empresa.nomeEmpresa + " realizado.");
             }
             catch (Exception ex)
             {

@@ -103,7 +103,7 @@ namespace IaziServerWeb.Controllers
             }
             catch(Exception er)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, er.Message);
+               return Request.CreateResponse(HttpStatusCode.BadRequest, er.Message);
             }
         }
 

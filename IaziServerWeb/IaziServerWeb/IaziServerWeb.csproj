@@ -164,6 +164,10 @@
     <Compile Include="Migrations\201511241722373_first.Designer.cs">
       <DependentUpon>201511241722373_first.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201512041521387_updateagenda.cs" />
+    <Compile Include="Migrations\201512041521387_updateagenda.Designer.cs">
+      <DependentUpon>201512041521387_updateagenda.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Agenda.cs" />
     <Compile Include="Models\Categoria.cs" />
@@ -198,6 +202,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201511241722373_first.resx">
       <DependentUpon>201511241722373_first.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512041521387_updateagenda.resx">
+      <DependentUpon>201512041521387_updateagenda.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

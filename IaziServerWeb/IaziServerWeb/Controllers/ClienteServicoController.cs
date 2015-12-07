@@ -14,7 +14,7 @@ namespace IaziServerWeb.Controllers
         [Route("agenda/addcliser")]
         [HttpPost]
         [Authorize]
-        public HttpResponseMessage CadastroEmpresa([FromBody]JObject model)
+        public HttpResponseMessage CadastroServicoCliente([FromBody]JObject model)
         {
             try
             {

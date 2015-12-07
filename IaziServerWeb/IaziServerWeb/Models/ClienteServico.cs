@@ -26,11 +26,11 @@ namespace IaziServerWeb.Models
 
         public double valorServico { get; set; }
 
-        public Nullable<System.DateTime> dataServico { get; set; }
+        public DateTime dataServico { get; set; }
 
-        public Nullable<System.DateTime> dataAlternativa { get; set; }
+        public Nullable<DateTime> dataAlternativa { get; set; }
 
-        public Nullable<System.DateTime>  dataResposta { get; set; }
+        public Nullable<DateTime>  dataResposta { get; set; }
     }
 }
 
