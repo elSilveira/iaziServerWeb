@@ -15,17 +15,17 @@ namespace IaziServerWeb.Controllers
     //    public HttpResponseMessage Get(int id) { ... }
     //    public HttpResponseMessage Post() { ... }
     //}
-
+    
     public class ClienteController : ApiController
     {
-
+        int cont = 0;
         // GET: api/values
         [Route("api/values")]
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            
-            return new string[] { "value1", "value2" };
+            DBContext db = new DBContext();
+            return new string[] {cont++ + ""};
         }
 
         [Route("api/addclient")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IaziServerWeb.Bomo;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,7 +44,7 @@ namespace IaziServerWeb.Models
             try
             {
                 var usuario = new Usuario();
-                
+
                 using (DBContext db = new DBContext())
                 {
                     var check = Encrypt(password);
@@ -57,7 +58,34 @@ namespace IaziServerWeb.Models
                     }
                 }
                 return usuario;
-            }catch(Exception)
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public static BomoUsuario VerificarUsuarioBomo(string password, string user)
+        {
+            try
+            {
+                var usuario = new BomoUsuario();
+
+                DBContext db = new DBContext();
+
+                //var check = Encrypt(password);
+                var pass = Encrypt(password);
+                var query = from u in db.BomoUsuario
+                            where u.bomoCliente.email == user && u.senha == pass
+                            select u;
+                foreach (BomoUsuario u in query)
+                {
+                    usuario = u;
+                }
+
+                return usuario;
+            }
+            catch (Exception)
             {
                 return null;
             }

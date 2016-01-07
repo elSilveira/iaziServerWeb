@@ -150,7 +150,13 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="AuthorizationServerProvider.cs" />
+    <Compile Include="Bomo\BomoCliente.cs" />
+    <Compile Include="Bomo\BomoContato.cs" />
+    <Compile Include="Bomo\BomoEmpresa.cs" />
+    <Compile Include="Bomo\BomoLancamentos.cs" />
+    <Compile Include="Bomo\BomoUsuario.cs" />
     <Compile Include="Controllers\AgendaController.cs" />
+    <Compile Include="Controllers\BomoController.cs" />
     <Compile Include="Controllers\CategoriaController.cs" />
     <Compile Include="Controllers\ClienteController.cs" />
     <Compile Include="Controllers\ClienteServicoController.cs" />
@@ -160,13 +166,17 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201511241722373_first.cs" />
-    <Compile Include="Migrations\201511241722373_first.Designer.cs">
-      <DependentUpon>201511241722373_first.cs</DependentUpon>
+    <Compile Include="Migrations\201601051657311_new.cs" />
+    <Compile Include="Migrations\201601051657311_new.Designer.cs">
+      <DependentUpon>201601051657311_new.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201512041521387_updateagenda.cs" />
-    <Compile Include="Migrations\201512041521387_updateagenda.Designer.cs">
-      <DependentUpon>201512041521387_updateagenda.cs</DependentUpon>
+    <Compile Include="Migrations\201601051658440_new2.cs" />
+    <Compile Include="Migrations\201601051658440_new2.Designer.cs">
+      <DependentUpon>201601051658440_new2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201601061607426_contato.cs" />
+    <Compile Include="Migrations\201601061607426_contato.Designer.cs">
+      <DependentUpon>201601061607426_contato.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Agenda.cs" />
@@ -200,11 +210,14 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201511241722373_first.resx">
-      <DependentUpon>201511241722373_first.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201601051657311_new.resx">
+      <DependentUpon>201601051657311_new.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201512041521387_updateagenda.resx">
-      <DependentUpon>201512041521387_updateagenda.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201601051658440_new2.resx">
+      <DependentUpon>201601051658440_new2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201601061607426_contato.resx">
+      <DependentUpon>201601061607426_contato.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

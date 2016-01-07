@@ -22,18 +22,34 @@ namespace IaziServerWeb
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
             try
             {
+                if (context.Scope[0] == "Bomo") {
+                    var usuario = Simple.VerificarUsuarioBomo(context.Password, context.UserName);
+                    if (usuario.idBomoUsuario > 0)
+                    {
+                        var identity = new ClaimsIdentity(context.Options.AuthenticationType);
 
-                var usuario = Simple.VerificarUsuario(context.Password, Convert.ToInt32(context.UserName));
+                        identity.AddClaim(new Claim("sub", context.UserName));
+                        identity.AddClaim(new Claim("role", "user"));
 
-                if (usuario.idUsuario > 0)
-                {
-                    var identity = new ClaimsIdentity(context.Options.AuthenticationType);
-
-                    identity.AddClaim(new Claim("sub", context.UserName));
-                    identity.AddClaim(new Claim("role", usuario.roleUsuario));
-
-                    context.Validated(identity);
+                        context.Validated(identity);
+                    }
                 }
+                else
+                {
+                    var usuario = Simple.VerificarUsuario(context.Password, Convert.ToInt32(context.UserName));
+
+                    if (usuario.idUsuario > 0)
+                    {
+                        var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+
+                        identity.AddClaim(new Claim("sub", context.UserName));
+                        identity.AddClaim(new Claim("role", usuario.roleUsuario));
+
+                        context.Validated(identity);
+                    }
+                }
+                    
+                
             }
             catch (Exception)
             {

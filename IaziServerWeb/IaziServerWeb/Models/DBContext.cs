@@ -1,4 +1,5 @@
-﻿using IaziServerWeb.Migrations;
+﻿using IaziServerWeb.Bomo;
+using IaziServerWeb.Migrations;
 using MySql.Data.Entity;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,11 @@ namespace IaziServerWeb.Models
         public virtual DbSet<EmpresaCliente> EmpresaCliente { get; set; }
         public virtual DbSet<ClienteServico> ClienteServico { get; set; }
         public virtual DbSet<EmpresaCliServ> EmpresaCliServ { get; set; }
+        public virtual DbSet<BomoUsuario> BomoUsuario { get; set; }
+        public virtual DbSet<BomoCliente> BomoCliente { get; set; }
+        public virtual DbSet<BomoEmpresa> BomoEmpresa { get; set; }
+        public virtual DbSet<BomoLancamentos> BomoLancamentos { get; set; }
+        public virtual DbSet<BomoContato> BomoContato { get; set; }
 
         public DBContext()
         {

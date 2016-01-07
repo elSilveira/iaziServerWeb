@@ -96,6 +96,49 @@ namespace IaziServerWeb.Controllers
             }
         }
 
+        public struct servicoemp
+        {
+            public int idServico;
+            public double valorServico;
+            public string tempoServico;
+        }
+
+        [Route("empresas/addServicosEmpresa")]
+        [HttpPost]
+        [Authorize]
+        public HttpResponseMessage AddServicosEmpresa([FromBody]JObject model)
+        {
+            try
+            {
+                dynamic json = model;
+                List<EmpresaServico> listCadastrar = new List<EmpresaServico>();
+                DBContext db = new DBContext();
+                int idServico = 0;
+                int idEmpresa = 0;
+                idEmpresa = json.idEmpresa;
+                json = model["Servicos"];
+                foreach (var s in json)
+                {
+                    EmpresaServico es = new EmpresaServico();
+                    idServico = s.idServico;
+                    es.servico = db.Servico.Single(x => x.idServico == idServico);
+                    es.empresa = db.Empresa.Single(x => x.idEmpresa == idEmpresa);
+                    es.tempoServico = s.tempoServico == null ? 0 : s.tempoServico;
+                    es.valorServico = s.valorServico == null ? 0 : s.valorServico;
+                    db.EmpresaServico.Add(es);
+                }
+                
+                db.SaveChanges();
+                return Request.CreateResponse(HttpStatusCode.OK);
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, ex.Message);
+            }
+
+        }
+
         [Route("empresas/listServicos")]
         [HttpPost]
         [Authorize]
@@ -142,6 +185,7 @@ namespace IaziServerWeb.Controllers
                 int id = 0;
                 id = json.idEmpresaServico;
                 DBContext db = new DBContext();
+                
                 var query = from es in db.EmpresaServico
                             join s in db.Servico on es.servico.idServico equals s.idServico
                             orderby s.categoria.idCategoria, s.nomeServico
@@ -175,24 +219,39 @@ namespace IaziServerWeb.Controllers
         [Route("empresas/listEmpresas")]
         [HttpPost]
         [Authorize]
-        public HttpResponseMessage ListarCategorias([FromBody]JObject model)
+        public HttpResponseMessage ListarEmpresas([FromBody]JObject model)
         {
             try
             {
                 List<Empresa> empresas = new List<Empresa>();
                 dynamic json = model;
                 DBContext db = new DBContext();
+                string cidadeCliente = "";
+                string estadoCliente = "";
+                int idCategoria = 0;
+                cidadeCliente = json.cidadeCliente;
+                estadoCliente = json.estadoCliente;
+                idCategoria = json.idCategoria;
+
+                var servs = from es in db.EmpresaServico where es.servico.categoria.idCategoria == idCategoria
+                            select es.empresa.idEmpresa;
+
+                var query = from e in db.Empresa
+                            where e.cidadeEmpresa == cidadeCliente
+                            && e.estadoEmpresa == estadoCliente
+                            && servs.Contains(e.idEmpresa)
+                            select e;
 
 
-                var query = db.Empresa.SqlQuery("select e.* from Empresas e " +
-                    " where e.idEmpresa in ( " +
-                    "     select es.idEmpresa from EmpresaServico es where " +
-                    "     es.idServico in (select s.idServico from Servicos s where idCategoria = " + json.idCategoria + ")) " +
-                    "     and e.cidadeEmpresa = (Select cli.cidadeCliente from Clientes cli " +
-                    "         where cli.idCliente = (select u.idCliente from Usuarios u where idUsuario = " + json.idUsuario + ")) " +
-                    "     and e.estadoEmpresa = (Select cli.estadoCliente from Clientes cli " +
-                    "         where cli.idCliente = (select u.idCliente from Usuarios u where idUsuario = " + json.idUsuario + ")) " +
-                    "     order by e.bairroEmpresa ");
+                    //db.Empresa.SqlQuery("select e.* from Empresas e " +
+                    //" where e.idEmpresa in ( " +
+                    //"     select es.idEmpresa from EmpresaServico es where " +
+                    //"     es.idServico in (select s.idServico from Servicos s where idCategoria = " + json.idCategoria + ")) " +
+                    //"     and e.cidadeEmpresa = (Select cli.cidadeCliente from Clientes cli " +
+                    //"         where cli.idCliente = (select u.idCliente from Usuarios u where idUsuario = " + json.idUsuario + ")) " +
+                    //"     and e.estadoEmpresa = (Select cli.estadoCliente from Clientes cli " +
+                    //"         where cli.idCliente = (select u.idCliente from Usuarios u where idUsuario = " + json.idUsuario + ")) " +
+                    //"     order by e.bairroEmpresa ");
                 foreach (Empresa e in query)
                 {
                     empresas.Add(e);
@@ -267,7 +326,6 @@ namespace IaziServerWeb.Controllers
                 dynamic json = model["Empresa"];
                 empresa = json.ToObject<Empresa>();
                 db.Empresa.Add(empresa);
-                db.SaveChanges();
 
                 json = model["Cliente"];
                 int idCliente = json;
@@ -275,7 +333,6 @@ namespace IaziServerWeb.Controllers
                             where u.cliente.idCliente == idCliente
                             select u).First();
                 user.roleUsuario = "manager";
-                db.SaveChanges();
 
                 EmpresaCliente ec = new EmpresaCliente()
                 {

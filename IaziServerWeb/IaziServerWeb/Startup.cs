@@ -34,7 +34,7 @@ namespace IaziServerWeb
                 AccessTokenExpireTimeSpan = TimeSpan.FromHours(3),
                 Provider = new AuthorizationServerProvider()
             };
-
+            
             // Token Generation
             app.UseOAuthAuthorizationServer(OAuthServerOptions);
             app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
